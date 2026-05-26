@@ -2,3 +2,6 @@
 title = "Анатомия Veo: Как я написал системный язык и как вам это повторить"
 authors = ["SamirShef"]
 language = "ru"
+
+[output.html]
+additional-js = ["veo-lang.js"]
