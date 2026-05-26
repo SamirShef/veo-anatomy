@@ -18,14 +18,16 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
       - name: Setup mdBook
-        uses: peaceiris/actions-mdbook@v2
+        uses: extractions/setup-crate@v1
         with:
-          mdbook-version: "latest"
+          owner: rust-lang
+          name: mdBook
 
       - name: Build Book
         run: mdbook build
