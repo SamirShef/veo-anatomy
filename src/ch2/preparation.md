@@ -7,7 +7,7 @@
 
 ---
 
-Итак, мы уже готовы разрабатывать компилятор. С чего бы начать? Лично я бы начал с создания нового репозитория на GitHub, клонировал бы его на свой ПК.
+Итак, мы уже готовы разрабатывать компилятор. С чего бы начать? Лично я бы начал с создания нового репозитория на GitHub и его клонирования на свой ПК.
 Затем я бы создал базовую структуру проекта (директории `include/` и `src/`) и написал бы точку входа `main.cpp`:
 
 ```cpp
@@ -20,8 +20,8 @@ main (int argc, char **argv) {
 }
 ```
 
-Затем нужно написать `CMakeLists.txt`, чтобы собирать проект. Скрипт должен находить LLVM на машине пользователя и линковать его с `veoc-core`, а сам `veoc-core`
-будет линковаться с `main.cpp`, чтобы получить `veoc`. Вот пример моего `CMakeLists.txt`:
+Затем нужно написать `CMakeLists.txt`, чтобы собирать проект. Скрипт должен находить LLVM на машине пользователя и линковать его с `veoc-core`, а затем
+линковать саму библиотеку `veoc-core` с точкой входа (`main.cpp`), чтобы получить исполняемый файл `veoc`. Вот пример моего `CMakeLists.txt`:
 
 ```cmake
 cmake_minimum_required(VERSION 3.20)
@@ -33,7 +33,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# Находим LLVM и выводим сообщения о том, где находится LLVM
+# Находим LLVM и выводим сообщения о том, где он находится
 find_package(LLVM REQUIRED CONFIG)
 message(STATUS "LLVM ${LLVM_PACKAGE_VERSION} was found")
 message(STATUS "LLVM path: ${LLVM_DIR}")
@@ -42,7 +42,7 @@ message(STATUS "LLVM path: ${LLVM_DIR}")
 include_directories(SYSTEM ${LLVM_INCLUDE_DIRS})
 add_definitions(${LLVM_DEFINITIONS})
 
-# Флаги, чтобы корректно использовать LLVM
+# Флаги для корректного использования LLVM
 if(NOT LLVM_ENABLE_RTTI)
     if(MSVC)
         add_compile_options(/GR-)
@@ -58,13 +58,13 @@ if(NOT LLVM_ENABLE_EH)
     endif()
 endif()
 
-# LLVM может распространятся как динамическая и как статическая библиотека
-# И это проблема, ведь способ линковки у них разный
+# LLVM может распространяться как динамическая, так и статическая библиотека
+# И это проблема, ведь способы линковки у них отличаются
 if(TARGET LLVM)
     # Нашлась динамическая библиотека
     set(LLVM_LINK_LIBS LLVM) # Сохраняем библиотеки в нашу
                              # переменную LLVM_LINK_LIBS
-    message(STATUS "Using shared LLVM target") # Уведомляем, что нашли динамическу
+    message(STATUS "Using shared LLVM target") # Уведомляем, что нашли динамическую
                                                # библиотеку
 else()
     # Нашлась статическая библиотека
@@ -89,14 +89,14 @@ endif()
 
 # Рекурсивный поиск всех .cpp файлов в src/
 file(GLOB_RECURSE SOURCES "src/*.cpp")
-# Удаление файла main.cpp с помощью регулярных выражений. Помните,
+# Исключаем файл main.cpp с помощью регулярных выражений. Помните,
 # что точка входа не должна быть частью veoc-core!
 list(FILTER SOURCES EXCLUDE REGEX ".*/main\\.cpp$|main\\.cpp$")
 
 # Создание статической библиотеки veoc-core
 add_library(veoc-core STATIC ${SOURCES})
 
-# Флаги, чтобы собрался LLVM и отладка
+# Флаги для совместимости с LLVM и отладки
 target_compile_options(veoc-core PRIVATE -fno-rtti -fno-exceptions -g)
 # Линковка LLVM
 target_link_libraries(veoc-core PRIVATE
@@ -116,5 +116,5 @@ target_link_libraries(${PROJECT_NAME} PRIVATE veoc-core)
 ```
 
 Я уверен, что мой `CMakeLists.txt`, если не идеален, то ужасен. Я всегда рад критике и приму любую вашу помощь в поддержке проекта. Этот скрипт (с некоторыми
-дополнениями) используется в самом Veo для сборки. На будущее настоятельно рекомендую размещать все части компилятора по пространствам имен (или модулям, зависит
+дополнениями) используется в самом Veo для сборки. На будущее: настоятельно рекомендую размещать все части компилятора по пространствам имён (или модулям, зависит
 от языка, на котором вы пишете). Каркас готов, осталось наслаивать мясо!
