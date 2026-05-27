@@ -6,3 +6,4 @@
   - [Стек технологий Veo](ch1/technologies-in-veo.md)
 - [Подготовка](ch2/preparation.md)
   - [Диагностика](ch2/diagnostic.md)
+  - [Имена](ch2/names.md)
