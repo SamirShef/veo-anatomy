@@ -5,3 +5,7 @@ language = "ru"
 
 [output.html]
 additional-js = ["veo-lang.js"]
+
+[output.html.code.hidelines]
+cpp = "$"
+bash = "@"
