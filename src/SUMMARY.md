@@ -7,3 +7,5 @@
 - [Подготовка](ch2/preparation.md)
   - [Диагностика](ch2/diagnostic.md)
   - [Имена](ch2/names.md)
+- [Компилятор](ch3/compiler.md)
+  - [Лексический анализ](ch3/lexer.md)
